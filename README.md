@@ -398,7 +398,8 @@ Sağlık tesisleri için çoklu platform (iOS, Android, Web) mesai dışı denet
 
 #### Users & Authentication
 
-\`\`\`sql
+```
+sql
 -- Kullanıcılar
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -437,11 +438,12 @@ CREATE TABLE refresh_tokens (
 
 CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
 CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
-\`\`\`
+```
 
 #### Roles & Permissions
 
-\`\`\`sql
+```
+sql
 -- Roller
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
@@ -465,11 +467,12 @@ INSERT INTO roles (name, display_name, description, permissions) VALUES
  '{"audits": ["read"], "reports": ["read", "export"], "corrective_actions": ["create", "read", "update"]}'::jsonb),
 ('hospital_manager', 'Hastane Yöneticisi', 'Düzeltici faaliyet yönetimi', 
  '{"corrective_actions": ["read", "update"]}'::jsonb);
-\`\`\`
+```
 
 #### Facilities & Groups
 
-\`\`\`sql
+```
+sql
 -- Tesis Grupları
 CREATE TABLE facility_groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -534,11 +537,12 @@ CREATE TABLE user_facility_assignments (
 CREATE INDEX idx_user_facility_user_id ON user_facility_assignments(user_id);
 CREATE INDEX idx_user_facility_facility_id ON user_facility_assignments(facility_id);
 CREATE INDEX idx_user_facility_role_id ON user_facility_assignments(role_id);
-\`\`\`
+```
 
 #### Question Pool
 
-\`\`\`sql
+```
+sql
 -- Kategoriler
 CREATE TABLE question_categories (
     id SERIAL PRIMARY KEY,
@@ -637,11 +641,12 @@ CREATE TABLE question_pool_tags (
     tag_id INTEGER REFERENCES question_tags(id) ON DELETE CASCADE,
     PRIMARY KEY (question_id, tag_id)
 );
-\`\`\`
+```
 
 #### Audit Templates
 
-\`\`\`sql
+```
+sql
 -- Denetim Şablonları
 CREATE TABLE audit_templates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -687,11 +692,12 @@ CREATE TABLE audit_template_history (
     changed_by UUID REFERENCES users(id),
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-\`\`\`
+```
 
 #### Audits
 
-\`\`\`sql
+```
+sql
 -- Denetimler
 CREATE TABLE audits (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -776,11 +782,12 @@ CREATE TABLE audit_response_history (
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     change_reason TEXT
 );
-\`\`\`
+```
 
 #### Reports
 
-\`\`\`sql
+```
+sql
 -- Denetim Raporları
 CREATE TABLE audit_reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -823,11 +830,12 @@ CREATE TABLE audit_report_recipients (
 
 CREATE INDEX idx_report_recipients_report_id ON audit_report_recipients(report_id);
 CREATE INDEX idx_report_recipients_user_id ON audit_report_recipients(user_id);
-\`\`\`
+```
 
 #### Corrective Actions
 
-\`\`\`sql
+```
+sql
 -- Düzeltici Faaliyetler
 CREATE TABLE corrective_actions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -888,11 +896,12 @@ CREATE TABLE corrective_action_comments (
 );
 
 CREATE INDEX idx_action_comments_action_id ON corrective_action_comments(action_id);
-\`\`\`
+```
 
 #### Notifications
 
-\`\`\`sql
+```
+sql
 -- Bildirimler
 CREATE TABLE notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -939,11 +948,12 @@ CREATE TABLE notification_preferences (
 );
 
 CREATE INDEX idx_notification_prefs_user_id ON notification_preferences(user_id);
-\`\`\`
+```
 
 #### Audit Logs
 
-\`\`\`sql
+```
+sql
 -- Sistem Audit Logları (güvenlik ve izlenebilirlik)
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -966,11 +976,12 @@ CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
 
 -- Partition by month for performance
 -- ALTER TABLE audit_logs PARTITION BY RANGE (created_at);
-\`\`\`
+```
 
 #### Settings & Configuration
 
-\`\`\`sql
+```
+sql
 -- Sistem ayarları
 CREATE TABLE system_settings (
     id SERIAL PRIMARY KEY,
@@ -992,7 +1003,7 @@ INSERT INTO system_settings (key, value, description, is_public) VALUES
 ('file.max_upload_size_mb', '10', 'Maksimum dosya yükleme boyutu (MB)', false),
 ('file.allowed_image_types', '["jpg", "jpeg", "png", "webp"]', 'İzin verilen resim formatları', false),
 ('file.allowed_document_types', '["pdf", "doc", "docx"]', 'İzin verilen doküman formatları', false);
-\`\`\`
+```
 
 ### Database Optimization
 
@@ -1006,7 +1017,8 @@ INSERT INTO system_settings (key, value, description, is_public) VALUES
 - `notifications`: Aylık partition + otomatik temizleme
 
 #### Views (Materialized)
-\`\`\`sql
+```
+sql
 -- Tesis performans özeti (hızlı raporlama için)
 CREATE MATERIALIZED VIEW facility_performance_summary AS
 SELECT 
@@ -1028,7 +1040,7 @@ CREATE UNIQUE INDEX ON facility_performance_summary (facility_id);
 
 -- Günlük refresh (cron job ile)
 -- REFRESH MATERIALIZED VIEW CONCURRENTLY facility_performance_summary;
-\`\`\`
+```
 
 ---
 
@@ -1036,7 +1048,7 @@ CREATE UNIQUE INDEX ON facility_performance_summary (facility_id);
 
 ### Rol Hiyerarşisi
 
-\`\`\`
+```
 Admin (Süper Yönetici)
     ↓
 Grup Admin (Tesis Grubu Yöneticisi)
@@ -1044,7 +1056,7 @@ Grup Admin (Tesis Grubu Yöneticisi)
     ├── Denetmen (Auditor)
     ├── Kontrolcü (Controller)
     └── Hastane Yöneticisi (Hospital Manager)
-\`\`\`
+```
 
 ### 1. Admin (Süper Yönetici)
 
@@ -1407,11 +1419,11 @@ Grup Admin (Tesis Grubu Yöneticisi)
    
    **Senaryo: 3 Hastane, 6 Denetmen**
    
-   \`\`\`
+```
    Hastane A: [Denetmen 1, Denetmen 2] (2 kişi)
    Hastane B: [Denetmen 3] (1 kişi)
    Hastane C: [Denetmen 4, Denetmen 5, Denetmen 6] (3 kişi)
-   \`\`\`
+```
    
    **Kurallar:**
    - Minimum 1, maksimum 3 kişi/hastane
